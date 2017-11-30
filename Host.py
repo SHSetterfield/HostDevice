@@ -13,19 +13,19 @@ dataFrame = ser.readline() #read a line terminated by \n, but our device may put
 
 
 #way to manually set the newline in the readline() method to char other than \n with io module
-''''
-self.ser = serial.Serial(port=self.port,
-                         baudrate=38400,
-                         bytesize=serial.EIGHTBITS,
-                         parity=serial.PARITY_NONE,
-                         stopbits=serial.STOPBITS_ONE,
-                         timeout=1)
-self.ser_io = io.TextIOWrapper(io.BufferedRWPair(self.ser, self.ser, 1),
-                               newline = '\r', #change this to whatever the inline tab is, probably '\t'
-                               line_buffering = True)
-self.ser_io.write("ID\r")
-self_id = self.ser_io.readline()
-''''
+
+#self.ser = serial.Serial(port=self.port,
+#                         baudrate=38400,
+#                         bytesize=serial.EIGHTBITS,
+#                         parity=serial.PARITY_NONE,
+#                         stopbits=serial.STOPBITS_ONE,
+#                         timeout=1)
+#self.ser_io = io.TextIOWrapper(io.BufferedRWPair(self.ser, self.ser, 1),
+#                               newline = '\r', #change this to whatever the inline tab is, probably '\t'
+#                               line_buffering = True)
+
+#self.ser_io.write("ID\r")
+#self_id = self.ser_io.readline()
 
 #way to create your own readline() method
 
@@ -42,3 +42,6 @@ def _readline(self):
         else:
             break
     return bytes(line)
+
+while 1:
+    print ser.readline()
