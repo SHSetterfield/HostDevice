@@ -1,47 +1,37 @@
 import serial #library to handle the serial port
 import io #we will use this to specify a readline() char other than \n (newline)
-import tkinter #standard python GUI library
+import Tkinter #standard python GUI library
 from Tkinter import *
 
-ser = serial.Serial('/dev/ttyACM0', 38400) #setup the serial port
-dataFrame = ser.readline() #read a line terminated by \n, but our device may put out a inline tab instead
-#usually you should specify a timeout when using a readline(), since it blocks until it receives one
+ser = serial.Serial('/dev/tty.usbmodem1412', 38400) #setup the serial port
 
-#dataFrame5Bytes = ser.read(5) #command to manually tell how many bytes to take
-#do stuff to parse dataFrame and send the appropriate parts to data variables
-#display the data variables under the correct titles
+CoordinatorData = []
 
+line = []
+for index in range(0,57): #data will begin on 0x10
+    data = ser.readline(1)
+    line.append(data)
 
-#way to manually set the newline in the readline() method to char other than \n with io module
+print line
 
-#self.ser = serial.Serial(port=self.port,
-#                         baudrate=38400,
-#                         bytesize=serial.EIGHTBITS,
-#                         parity=serial.PARITY_NONE,
-#                         stopbits=serial.STOPBITS_ONE,
-#                         timeout=1)
-#self.ser_io = io.TextIOWrapper(io.BufferedRWPair(self.ser, self.ser, 1),
-#                               newline = '\r', #change this to whatever the inline tab is, probably '\t'
-#                               line_buffering = True)
+del line[0:31]
 
-#self.ser_io.write("ID\r")
-#self_id = self.ser_io.readline()
+print "deleted unnecessary bytes 0-31"
 
-#way to create your own readline() method
+print line
+if line[14] == 'C':  #then data is for coordinator device
+    print "coordinator detected..."
+    CoordinatorData.append(line[0]) #coordinator switch state
+    CoordinatorData.append(line[4]) #coordinator battery (?)
+    CoordinatorData.append(line[8]) #light sensor (cast as number later)
 
-def _readline(self):
-    eol = b'\r' #specifies end of line character, change this to inline tab escape character '\t'
-    leneol = len(eol) #length of end of line character
-    line = bytearray() #create an array of bytes to store the line we will read
-    while True: #this loop says "never leave me!"
-        c = self.ser.read(1) #read one byte from the serial port
-        if c: #if there's something there
-            line += c #add that byte to the byte array where we store our reads
-            if line[-leneol:] == eol: #if
-                break
-        else:
-            break
-    return bytes(line)
+print CoordinatorData
+from Tkinter import *
 
-while 1:
-    print ser.readline()
+root = Tk()
+
+w = Label(root, text="Coordinator")
+w.pack()
+x = Label(root, text=CoordinatorData[0])
+x.pack()
+root.mainloop()
